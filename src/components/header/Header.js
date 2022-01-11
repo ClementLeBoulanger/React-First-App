@@ -4,7 +4,7 @@ export default class Header extends Component {
   render() {
     return (
       <header className="navbar navbar-expand-lg navbar-dark bg-dark d-flex justify-content-between mb-2">
-        <a className="navbar-brand" href="/"><i class="fas fa-film"></i> Allo Movies</a>
+        <a className="navbar-brand" href="/"><i className="fas fa-film"></i> Allo Movies</a>
         <button className="navbar-toggler">
           <span className="navbar-toggler-icon"></span>
         </button>
