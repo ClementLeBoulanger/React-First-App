@@ -1,7 +1,8 @@
 .container {
-  width: 350px;
-  height: 200px;
+  width: 480px;
+  height: 280px;
   overflow: hidden;
+  border-radius: 10px;
   margin: 0px 10px 20px 10px;
   cursor: pointer;
   &:hover {
