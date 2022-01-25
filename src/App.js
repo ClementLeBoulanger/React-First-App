@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Header from './components/header/Header';
 import NotFound from './components/notfound/NotFound';
 import apiMovie from './config/api.movie';
+import apiFirebase from './config/api.firebase';
 import Films from './features/films';
 import Favoris from './features/favoris';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
@@ -30,12 +31,26 @@ class App extends Component {
         this.updateMovies(movies);
       })
       .catch(err => console.log(err));
+
+    apiFirebase.get('favoris.json')
+      .then(response => {
+        let favoris = response.data ? response.data : [];
+        this.updateFavori(favoris)
+      })
+      .catch(err => console.log(err));
   }
 
   updateMovies = (movies) => {
     this.setState({
       movies,
-      loaded: true
+      loaded: this.state.favoris ? true : false
+    })
+  }
+
+  updateFavori = (favoris) => {
+    this.setState({
+      favoris,
+      loaded: this.state.movies ? true : false
     })
   }
 
@@ -49,18 +64,22 @@ class App extends Component {
     const favoris = this.state.favoris.slice();
     const film = this.state.movies.find(m => m.title === title);
     favoris.push(film);
-    this.setState({
-      favoris
-    });
+    this.setState(state => ({
+      favoris: [...this.state.favoris, film]
+    }), this.saveFavoris);
   }
 
   removeFavori = (title) => {
     const favoris = this.state.favoris.slice();
     const index = this.state.favoris.findIndex( f => f.title === title);
     favoris.splice(index, 1);
-    this.setState({
-      favoris
-    })
+    this.setState(state => ({
+      favoris: state.favoris.filter((_, i) => i !== index)
+    }), this.saveFavoris);
+  }
+
+  saveFavoris = () => {
+    apiFirebase.put('favoris.json', this.state.favoris);
   }
 
   render() {
