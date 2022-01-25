@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import Header from './components/header/Header';
-import MoviesDetails from './components/movie-details/MovieDetails';
-import MoviesList from './components/movie-list/MovieList';
-import SearchBar from './components/search-bar/SearchBar';
-import Loading from './components/utils/Loading';
-import apiMovie from './config/api.movie'
+import NotFound from './components/notfound/NotFound';
+import apiMovie from './config/api.movie';
+import Films from './features/films';
+import Favoris from './features/favoris';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 class App extends Component {
   constructor(props) {
@@ -12,7 +12,8 @@ class App extends Component {
     this.state = {
       movies: null,
       selectedMovie: 0,
-      loaded: false
+      loaded: false,
+      favoris: []
     }
   }
 
@@ -44,18 +45,57 @@ class App extends Component {
     })
   }
 
+  addFavori = (title) => {
+    const favoris = this.state.favoris.slice();
+    const film = this.state.movies.find(m => m.title === title);
+    favoris.push(film);
+    this.setState({
+      favoris
+    });
+  }
+
+  removeFavori = (title) => {
+    const favoris = this.state.favoris.slice();
+    const index = this.state.favoris.findIndex( f => f.title === title);
+    favoris.splice(index, 1);
+    this.setState({
+      favoris
+    })
+  }
+
   render() {
     return (
-      <div className="App d-flex flex-column">
-        <Header />
-        <SearchBar updateMovies={ this.updateMovies } />
-        { this.state.loaded ? (<div className="d-flex flex-row flex-fill p-2">
-          <MoviesList movies={this.state.movies} updateSelectedMovie={this.updateSelectedMovie} />
-          <MoviesDetails movie={this.state.movies[this.state.selectedMovie]} />
-        </div>) : (
-          <Loading />
-        )}
-      </div>
+      <Router>
+        <div className="App d-flex flex-column">
+          <Header />
+          <Routes>
+            <Route
+              path="/films" element={
+              <Films
+                {...this.props}
+                loaded={this.state.loaded}
+                updateMovies={this.updateMovies}
+                updateSelectedMovie={this.updateSelectedMovie}
+                movies={this.state.movies}
+                selectedMovie={this.state.selectedMovie}
+                addFavori={this.addFavori}
+                removeFavori={this.removeFavori}
+                favoris={this.state.favoris.map( f => f.title)}
+              />}
+            />
+            <Route
+              path="/favoris" element={
+              <Favoris
+              {...this.props}
+              removeFavori={this.removeFavori}
+              favoris={this.state.favoris}
+              />
+              }
+            />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
+      </Router>
     );
   }
 }
