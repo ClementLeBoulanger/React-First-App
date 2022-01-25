@@ -106,6 +106,7 @@ class App extends Component {
               path="/favoris" element={
               <Favoris
               {...this.props}
+              loaded={this.state.loaded}
               removeFavori={this.removeFavori}
               favoris={this.state.favoris}
               />
